@@ -385,6 +385,21 @@ impl<Parser> Solver<Parser> {
         self.assert_with(expr, ())
     }
 
+    #[inline]
+    pub fn maximize<Expr>(&mut self, expr: &Expr) -> SmtRes<()>
+    where
+        Expr: ?Sized + Expr2Smt<()>,
+    {
+        tee_write! {
+          self, |w| {
+            write_str(w, "(maximize\n  ")?;
+            expr.expr_to_smt2(w, ())?;
+            write_str(w, "\n)\n") ?
+          }
+        }
+        Ok(())
+    }
+
     /// Check-sat command, turns `unknown` results into errors.
     ///
     /// # See also
